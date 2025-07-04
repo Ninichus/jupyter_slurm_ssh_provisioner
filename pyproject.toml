@@ -20,8 +20,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/sv99/jupyter_existing_provisioner"
-Issues = "https://github.com/sv99/jupyter_existing_provisioner/issues"
+Homepage = "https://github.com/Ninichus/jupyter_slurm_ssh_provisioner"
+Issues = "https://github.com/Ninichus/jupyter_slurm_ssh_provisioner/issues"
 
 [project.entry-points."jupyter_client.kernel_provisioners"]
 slurm-ssh-provisioner = "jupyter_slurm_ssh_provisioner:SlurmSSHProvisioner"
