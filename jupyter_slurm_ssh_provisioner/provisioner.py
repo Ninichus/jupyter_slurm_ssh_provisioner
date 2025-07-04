@@ -1,7 +1,7 @@
-from jupyter_client import KernelProvisionerBase
-import asyncssh
 import logging
 import json
+from jupyter_client import KernelProvisionerBase
+import asyncssh
 
 _log = logging.getLogger(__name__)
 _log.setLevel(logging.DEBUG)
@@ -24,8 +24,9 @@ class SlurmSSHProvisioner(KernelProvisionerBase):
 
         self.host = config.get('host', '')
         self.username = config.get('username', 'debian')
-        # 5 consecutive ports starting with first_local_port will be used to establish the connection with the remote kernel
-        self.first_local_port = config.get('first_local_port', 9000) 
+        # 5 consecutive ports starting with first_local_port will be used
+        # to establish the connection with the remote kernel
+        self.first_local_port = config.get('first_local_port', 9000)
         self._wrapper_cmd = config.get('wrapper_cmd', 'bash ~/wrapper.sh')
 
         _log.error("using config %s",config)
@@ -34,7 +35,7 @@ class SlurmSSHProvisioner(KernelProvisionerBase):
         self._ssh_conn = None # SSH connection object for managing SSH tunnels
         self._ssh_tunnels = [] # List to hold SSH tunnel processes
         self._ports_map = {} # Dictionary to map remote ports to local ports for SSH tunneling
-        self._connection_info = {} # Dictionary to hold connection info for the Jupyter kernel        
+        self._connection_info = {} # Dictionary to hold connection info for the Jupyter kernel
         _log.info("SlurmSSHProvisioner initialized")
 
 
@@ -66,7 +67,7 @@ class SlurmSSHProvisioner(KernelProvisionerBase):
             except Exception as e:
                 _log.error("Failed to establish SSH tunnels: %s", e)
                 raise RuntimeError(f"SSH tunnel setup failed: {e}") from e
-            
+
             # Log the mapping of remote to local ports for debugging
             for remote_port, local_port in self._ports_map.items():
                 _log.info("Remote port %s is forwarded to local port %s", remote_port, local_port)
@@ -80,7 +81,7 @@ class SlurmSSHProvisioner(KernelProvisionerBase):
             _log.error("Failed to launch kernel: %s", e)
             await self.cleanup(False)
             raise e
-    
+
     async def pre_launch(self, **kwargs):
         kwargs = await super().pre_launch(**kwargs)
         kwargs.setdefault('cmd', None)
@@ -92,7 +93,7 @@ class SlurmSSHProvisioner(KernelProvisionerBase):
                 result = await conn.run(command)
                 if result.exit_status != 0:
                     raise RuntimeError(
-                        f"SSH command failed with status {result.exit_status}: {result.stderr.strip()}"
+                    f"SSH command failed with status {result.exit_status}: {result.stderr.strip()}"
                     )
                 return result.stdout.strip()
         except (asyncssh.Error, OSError) as e:
@@ -127,15 +128,15 @@ class SlurmSSHProvisioner(KernelProvisionerBase):
             _log.debug("Remote connection file content: %s", connection_info)
 
             # Extract ports and set up SSH tunnels
-            for i,(key, value) in enumerate(connection_info.items()):
-                if key in set(["shell_port", "iopub_port", "stdin_port", "control_port", "hb_port"]):
+            for i,(k, value) in enumerate(connection_info.items()):
+                if k in set(["shell_port", "iopub_port", "stdin_port", "control_port", "hb_port"]):
                     local_port = self.first_local_port + i
                     self._ports_map[value] = local_port
 
             # Update connection_info to use local ports for tunneling
-            for key,value in connection_info.items():
-                if key in set(["shell_port", "iopub_port", "stdin_port", "control_port", "hb_port"]):
-                    connection_info[key] = self._ports_map[value]
+            for k,value in connection_info.items():
+                if k in set(["shell_port", "iopub_port", "stdin_port", "control_port", "hb_port"]):
+                    connection_info[k] = self._ports_map[value]
 
             # Save the remote connection file content locally for use by Jupyter
             local_connection_file = f"/tmp/kernel-remote-{self._slurm_job_id}.json"
@@ -206,5 +207,5 @@ class SlurmSSHProvisioner(KernelProvisionerBase):
                 self._ssh_conn.close()
             except (asyncssh.Error, OSError) as e:
                 _log.error("Error closing SSH connection: %s", e)
-    
+
         _log.info("Cleanup completed.")
