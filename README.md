@@ -47,4 +47,4 @@ This is the kernel that will use the slurm-ssh-provisioner. It will be displayed
 You should now be able to use this new kernel.
 
 Use `jupyter kernelspec list` to check your kernel is detected.
-Use `jupyter kernelspec provisioner` to check that slurm-ssh-provisioner is installed.
+Use `jupyter kernelspec provisioners` to check that slurm-ssh-provisioner is installed.
