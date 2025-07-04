@@ -226,7 +226,7 @@ class SlurmSSHProvisioner(KernelProvisionerBase):
             _log.info("Cancelling Slurm job %s...", self._slurm_job_id)
             await self._cancel_slurm_job()
 
-        if self._ssh_conn:
+        if self._ssh_tunnel_config.ssh_conn:
             _log.info("Closing SSH tunnels...")
             try:
                 self._ssh_tunnel_config.ssh_conn.close()
