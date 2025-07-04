@@ -34,7 +34,8 @@ This is the kernel that will use the slurm-ssh-provisioner. It will be displayed
       "config": {
         "host": "xxx.xxx.xxx.xxx",
         "username": "debian",
-        "first_local_port": 9000
+        "first_local_port": 9000,
+        "wrapper_cmd": "bash wrapper.sh"
       }
     }
   }
